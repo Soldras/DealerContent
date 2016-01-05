@@ -12,6 +12,9 @@
 
 namespace DealerContent;
 
+use DealerContent\Model\DealerContentQuery;
+use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Install\Database;
 use Thelia\Module\BaseModule;
 
 class DealerContent extends BaseModule
@@ -19,10 +22,13 @@ class DealerContent extends BaseModule
     /** @var string */
     const DOMAIN_NAME = 'dealercontent';
 
-    /*
-     * You may now override BaseModuleInterface methods, such as:
-     * install, destroy, preActivation, postActivation, preDeactivation, postDeactivation
-     *
-     * Have fun !
-     */
+    public function postActivation(ConnectionInterface $con = null)
+    {
+        try {
+            DealerContentQuery::create()->findOne();
+        } catch (\Exception $e) {
+            $database = new Database($con);
+            $database->insertSql(null, [__DIR__ . "/Config/thelia.sql"]);
+        }
+    }
 }
